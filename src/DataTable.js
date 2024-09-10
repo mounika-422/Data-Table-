@@ -8,14 +8,20 @@ const DataTable = () => {
   });
   const [data, setData] = useState([]);
   const [editId, setEditId] = useState(false);
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const outsideClick = useRef(false);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = data
+    .filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(indexOfFirstItem, indexOfLastItem);
   const handleAddClick = () => {
     if (formData.name && formData.age && formData.gender) {
       const newItem = {
@@ -42,7 +48,9 @@ const DataTable = () => {
   const handleSearchTerm = (e) => {
     setSearchTerm(e.target.value);
   };
-
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (
@@ -157,7 +165,16 @@ const DataTable = () => {
             ))}
           </tbody>
         </table>
-        <div className="pagination"></div>
+        <div className="pagination">
+          {Array.from(
+            { length: Math.ceil(data.length / itemsPerPage) },
+            (_, index) => (
+              <button key={index + 1} onClick={() => paginate(index + 1)}>
+                {index + 1}
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );
