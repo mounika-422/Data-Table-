@@ -17,11 +17,10 @@ const DataTable = () => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const filteredData = data
-    .filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .slice(indexOfFirstItem, indexOfLastItem);
+  const filteredItems = data.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const filteredData = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
   const handleAddClick = () => {
     if (formData.name && formData.age && formData.gender) {
       const newItem = {
@@ -36,6 +35,9 @@ const DataTable = () => {
   };
   const handleDelete = (id) => {
     const updatedList = data.filter((item) => item.id !== id);
+    if (filteredData.length === 1 && currentPage !== 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
     setData(updatedList);
   };
   const handleEdit = (id, updatedData) => {
@@ -63,6 +65,10 @@ const DataTable = () => {
     document.addEventListener("click", handleOutsideClick);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
   useEffect(() => {
     if (!editId) return;
     let selectedItem = document.querySelector(`[data-id="${editId}"`);
@@ -167,9 +173,15 @@ const DataTable = () => {
         </table>
         <div className="pagination">
           {Array.from(
-            { length: Math.ceil(data.length / itemsPerPage) },
+            { length: Math.ceil(filteredItems.length / itemsPerPage) },
             (_, index) => (
-              <button key={index + 1} onClick={() => paginate(index + 1)}>
+              <button
+                style={{
+                  backgroundColor: currentPage === index + 1 && "lightgreen",
+                }}
+                key={index + 1}
+                onClick={() => paginate(index + 1)}
+              >
                 {index + 1}
               </button>
             )

@@ -72,6 +72,11 @@ table tr:hover {
 tr th {
   min-width: 100px;
 }
+.pagination {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
 table th {
   padding-top: 12px;
   padding-bottom: 12px;
